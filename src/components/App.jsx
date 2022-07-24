@@ -16,18 +16,19 @@ export function App() {
 	const [allImages, setAllImages] = useState("");
 
 	useEffect(() => {
-		if (query === "") {
-			return;
+		if (query !== "") {
+			addImage();
 		}
-		const addImage = async () => {
+		async function addImage() {
 			setLoading(true);
+
 			try {
 				const res = await getImages(query, page);
 
 				setImages(prevState => [...prevState, ...res.hits]);
 
 				setAllImages(res.total);
-				if (allImages === 0) {
+				if (res.total === 0) {
 					Notify.failure("Images not found");
 					return;
 				}
@@ -38,13 +39,11 @@ export function App() {
 				setLoading(false);
 				Loading.remove();
 			}
-		};
+		}
+	}, [page, query]);
 
-		addImage();
-	}, [allImages, page, query]);
-
-	const addQuery = query => {
-		setQuery(query);
+	const addQuery = value => {
+		setQuery(value.query);
 		setPage(1);
 		setImages([]);
 	};
